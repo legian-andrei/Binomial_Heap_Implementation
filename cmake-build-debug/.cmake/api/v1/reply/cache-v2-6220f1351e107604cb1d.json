@@ -55,7 +55,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "c:/Users/andre/Documents/sd-lab/tema2-binomial_heep/cmake-build-debug"
+			"value" : "c:/Users/andre/Documents/sd-lab/tema2-binomial_heep/sd_tema2_binomial_heap/cmake-build-debug"
 		},
 		{
 			"name" : "CMAKE_CACHE_MAJOR_VERSION",
@@ -575,7 +575,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "C:/Users/andre/Documents/sd-lab/tema2-binomial_heep/cmake-build-debug/CMakeFiles/pkgRedirects"
+			"value" : "C:/Users/andre/Documents/sd-lab/tema2-binomial_heep/sd_tema2_binomial_heap/cmake-build-debug/CMakeFiles/pkgRedirects"
 		},
 		{
 			"name" : "CMAKE_GENERATOR",
@@ -647,7 +647,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "C:/Users/andre/Documents/sd-lab/tema2-binomial_heep"
+			"value" : "C:/Users/andre/Documents/sd-lab/tema2-binomial_heep/sd_tema2_binomial_heap"
 		},
 		{
 			"name" : "CMAKE_INSTALL_PREFIX",
@@ -1275,7 +1275,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "C:/Users/andre/Documents/sd-lab/tema2-binomial_heep/cmake-build-debug"
+			"value" : "C:/Users/andre/Documents/sd-lab/tema2-binomial_heep/sd_tema2_binomial_heap/cmake-build-debug"
 		},
 		{
 			"name" : "tema2_binomial_heep_IS_TOP_LEVEL",
@@ -1299,7 +1299,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "C:/Users/andre/Documents/sd-lab/tema2-binomial_heep"
+			"value" : "C:/Users/andre/Documents/sd-lab/tema2-binomial_heep/sd_tema2_binomial_heap"
 		}
 	],
 	"kind" : "cache",

@@ -1,9 +1,12 @@
-#include <fstream>
 #include <iostream>
+#include <fstream>
 #include <list>
+#include <climits>
+#include <algorithm>
 
 using namespace std;
-ifstream inp("mergeheap.in");
+
+ifstream in("mergeheap.in");
 ofstream out("mergeheap.out");
 
 struct Node{
@@ -12,202 +15,190 @@ struct Node{
 };
 
 Node* newNode(int value){
-    Node* temp = new Node;
-    temp->value = value;
-    temp->degree = 0;
-    temp->parent = nullptr;
-    temp->child = nullptr;
-    temp->sibling = nullptr;
-    return temp;
+    Node *aux = new Node;
+    aux->value = value;
+    aux->degree = 0;
+    aux->parent = nullptr;
+    aux->child = nullptr;
+    aux->sibling = nullptr;
+    return aux;
 }
 
 class BinomialHeap{
     list<Node*> heap;
-protected:
-    void mergeTree(Node* t1, Node* t2){
-        /// If the values of first node is lower than the value of the second,
-        /// we swap them and make the lower one a child of the other one
-        if(t1->value < t2->value){
-            swap(*t1, *t2);
-        }
-        t2->sibling = t1->child;
-        t2->parent = t1;
-        t1->child = t2;
-        t1->degree++;
-    }
-
-    void adjustHeap(){
-        if(heap.size() > 1){
-            list<Node*> :: iterator previous, current, next, temp;
-            previous = heap.begin();
-            current = previous; current++;
-            next = ++current;
-
-            while(current != heap.end()){
-                /// If degree of only 2 trees in heap are the same, merge them
-                /// If there are 3 trees in a row with the same degree, we merge only the last 2 of them
-                while((*previous)->degree == (*current)->degree && current != heap.end() &&
-                        (next == heap.end() || (*current)->degree) < (*next)->degree){
-                    mergeTree(*current, *previous);
-                    temp = previous;
-                    /// Move forward in heap
-                    if(previous == heap.begin()){
-                        previous++; current++;
-                        if(next != heap.end()){
-                            next++;
-                        }
-                    } else {
-                        previous--;
-                    }
-                    heap.erase(temp);
-                }
-
-                /// If we haven't found 2 trees having the same degree, we simply move forward in heap
-                previous++;
-                if(current != heap.end()){
-                    current++;
-                }
-                if(next != heap.end()){
-                    next++;
-                }
-            }
-
-        }
-    }
-
-    void deleteRoot(Node* toBeDeletedTree, BinomialHeap& newHeap){
-        /// If the tree has degree = 0 (or has no childs) we simply delete it
-        if(toBeDeletedTree->degree == 0){
-            delete toBeDeletedTree;
-            return;
-        }
-        Node* aux = toBeDeletedTree;
-
-        /// We move all the children to a new heap after unassigning their parents
-        aux->child->parent = nullptr;
-        newHeap.heap.push_front(aux->child);
-        aux = aux->child;
-        while (aux->sibling){
-            aux->sibling->parent = nullptr;
-            newHeap.heap.push_front(aux->sibling);
-            aux = aux->sibling;
-        }
-
-        delete toBeDeletedTree;
-    }
-
-    list<Node*> :: iterator getRoot(){
-        list<Node*> :: iterator i, pozMax;
-        Node* maxVal = newNode((*heap.begin())->value);
-        /// Find the max value
-        for(i = heap.begin(); i != heap.end(); i++){
-            if((*i)->value > maxVal->value){
-                maxVal = *i;
-                pozMax = i;
-            }
-        }
-        return pozMax;
-    }
 public:
-    BinomialHeap() {}
-
-    BinomialHeap(int value){
-        heap.push_back(newNode(value));
+    Node* mergeHeap(Node *h1, Node *h2){
+        /// Nodul cu valoare mai mare va deveni parintele nodului cu valoarea mai mica
+        if(h1->value < h2->value){
+            swap(h1, h2);
+        }
+        h2->sibling = h1->child;
+        h2->parent = h1;
+        h1->child = h2;
+        h1->degree++;
+        return h1;
     }
 
-    void heapsUnion(BinomialHeap& toBeMerged){
-        list<Node*> :: iterator h1, h2;
-        list<Node*> newHeap;
-        h1 = heap.begin(); h2 = toBeMerged.heap.begin();
+    void heapsUnion(list<Node*> h2){
+        list<Node*> aux;
+        list<Node*>::iterator it1, it2;
+        it1 = heap.begin(); it2 = h2.begin();
+        /// Dupa ce dau merge la 2 noduri, pastrez rezultatul in prev pentru a verifica
+        /// daca ii pot da merge iarasi cu unul dintre nodurile curente
+        Node* prev = nullptr;
 
-        /// Merge the heaps
-        while(h1 != heap.end() && h2 != toBeMerged.heap.end()){
-            if((*h1)->degree <= (*h2)->degree){
-                newHeap.push_back(*h1);
-                h1++;
+        while(it1 != heap.end() && it2 != h2.end()){
+            if(prev){
+                if((*it1)->degree == (*it2)->degree && prev->degree){
+                    aux.push_back(prev);
+                    prev = nullptr;
+                    continue;
+                } else if((*it1)->degree == prev->degree){
+                    prev = mergeHeap(*it1, prev);
+                    it1++;
+                    continue;
+                } else if((*it2)->degree == prev->degree){
+                    prev = mergeHeap(*it2, prev);
+                    it2++;
+                    continue;
+                } else {
+                    aux.push_back(prev);
+                    prev = nullptr;
+                    continue;
+                }
+            }
+
+            /// Daca cele 2 noduri au acelasi grad, le dau merge. Daca nu, il bag pe cel
+            /// cu grad mai mic in aux si trec mai departe
+            if((*it1)->degree == (*it2)->degree){
+                prev = mergeHeap(*it1, *it2);
+                it1++; it2++;
+            } else if((*it1)->degree > (*it2)->degree){
+                aux.push_back(*it2);
+                it2++;
             } else {
-                newHeap.push_back(*h2);
-                h2++;
+                aux.push_back(*it1);
+                it1++;
             }
         }
-        while(h1 != heap.end()){
-            newHeap.push_back(*h1);
-            h1++;
-        }
-        while(h2 != toBeMerged.heap.end()){
-            newHeap.push_back(*h2);
-            h2++;
-        }
 
-        /// Clear the second heap and adjust the final heap
-        toBeMerged.heap.clear();
-        heap = newHeap;
-        adjustHeap();
-
-        /*
-        heap.clear();
-        if(newHeap.empty()){
-            return;
-        }
-        heap.push_back(*newHeap.begin());
-        for(auto i = newHeap.begin(); i != newHeap.end(); i++){
-            if(heap.back()->degree == (*i)->degree){
-                mergeTree(heap.back(), (*i));
+        /// Daca vreunul din cele 2 noduri a ramas neparcurs, aplic aceeasi procedura
+        /// ca mai sus pana nu mai are elemente neparcurse
+        while(it1 != heap.end()){
+            if(prev && (*it1)->degree == prev->degree){
+                prev = mergeHeap(*it1, prev);
+                it1++;
+            } else if(prev){
+                aux.push_back(prev);
+                prev = nullptr;
             } else {
-                heap.push_back(*i);
+                aux.push_back(*it1);
+                it1++;
             }
-        }*/
+        }
+        while(it2 != h2.end()){
+            if(prev && (*it2)->degree == prev->degree){
+                prev = mergeHeap(*it2, prev);
+                it2++;
+            } else if(prev){
+                aux.push_back(prev);
+                prev = nullptr;
+            } else {
+                aux.push_back(*it2);
+                it2++;
+            }
+        }
+        if(prev){
+            aux.push_back(prev);
+            prev = nullptr;
+        }
+        heap = aux;
     }
 
     void push(int value){
-        Node* x = newNode(value);
-        heap.push_front(x);
-        adjustHeap();
-        //BinomialHeap temp(value);
-        //mergeHeaps(temp);
+        /// Creem o lista auxiliara cu un singur nod si ii dam merge cu heapul mare
+        list<Node*> aux;
+        Node* auxNode = newNode(value);
+        aux.push_back(auxNode);
+        heapsUnion(aux);
     }
 
     int top(){
-        return (*getRoot())->value;
+        /// Returneaza maximul dintre noduri
+        int aux = INT_MIN;
+        for(Node* it: heap){
+            if(aux < it->value){
+                aux = it->value;
+            }
+        }
+        return aux;
     }
 
     void pop(){
-        auto root = this->getRoot();
-        BinomialHeap newHeap;
-        deleteRoot((*root), newHeap);
-        heap.erase(root);
-        heapsUnion(newHeap);
-        //mergeHeaps(newHeap);
+        int valMax = top();
+        Node* auxNode = nullptr;
+        list<Node*> aux;
+
+        /// Stergem nodul cu valoare maxima din heap
+        for(auto i = heap.begin(); i != heap.end(); i++){
+            if((*i)->value == valMax){
+                auxNode = *i;
+                heap.remove(*i);
+                break;
+            }
+        }
+
+        /// Continuam doar daca nodul a fost gasit (heapul nu este deja gol)
+        if(!auxNode){
+            return;
+        }
+
+        if(!auxNode->degree){
+            delete auxNode;
+            return;
+        }
+        /// Punem toti copiii nodului cu val maxima in aux
+        Node* i = auxNode->child;
+        while(i != nullptr){
+            aux.push_front(i);
+            i = i->sibling;
+        }
+
+        /// Facem un union pentru a introduce la loc copiii nodului extras in heap
+        this->heapsUnion(aux);
     }
+
+    /// Pentru a apela functia din main pentru cerinta 3, apelam functia aceasta intermediara
+    /// Functia apeleaza heapsUnion doar cu heap-ul dat ca parametru
+    void mergeH(const BinomialHeap& h2){
+        heapsUnion(h2.heap);
+    }
+
 };
 
-int main() {
-    int n, m;
-    inp >> n >> m;
-    BinomialHeap* heaps = new BinomialHeap[n];
-
-
-    int taskNo, value, heapNo, heap1, heap2;
-    for(int i = 0; i < m; i++){
-        inp >> taskNo;
-        switch (taskNo) {
+int main(){
+    int n, q;
+    in >> n >> q;
+    BinomialHeap heaps[n];
+    int taskNo, heapNo, value, heap1, heap2;
+    for(int i = 0; i < q; i++){
+        in >> taskNo;
+        switch(taskNo){
             case 1:
-                inp >> heapNo >> value;
-                heaps[heapNo].push(value);
+                in >> heapNo >> value;
+                heaps[heapNo - 1].push(value);
                 break;
-
             case 2:
-                inp >> heapNo;
-                out << heaps[heapNo].top() << endl;
-                heaps[heapNo].pop();
+                in >> heapNo;
+                out << heaps[heapNo - 1].top() << endl;
+                heaps[heapNo - 1].pop();
                 break;
-
             case 3:
-                inp >> heap1 >> heap2;
-                heaps[heap1].heapsUnion(heaps[heap2]);
+                in >> heap1 >> heap2;
+                heaps[heap1 - 1].mergeH(heaps[heap2 - 1]);
+                heaps[heap2 - 1] = BinomialHeap();
                 break;
-
         }
     }
-    return 0;
 }
+

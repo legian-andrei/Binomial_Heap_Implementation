@@ -42,7 +42,7 @@ rule CUSTOM_COMMAND
 # Rule for re-running cmake.
 
 rule RERUN_CMAKE
-  command = "C:\Program Files\JetBrains\CLion 2022.3.2\bin\cmake\win\x64\bin\cmake.exe" --regenerate-during-build -SC:\Users\andre\Documents\sd-lab\tema2-binomial_heep -BC:\Users\andre\Documents\sd-lab\tema2-binomial_heep\cmake-build-debug
+  command = "C:\Program Files\JetBrains\CLion 2022.3.2\bin\cmake\win\x64\bin\cmake.exe" --regenerate-during-build -SC:\Users\andre\Documents\sd-lab\tema2-binomial_heep\sd_tema2_binomial_heap -BC:\Users\andre\Documents\sd-lab\tema2-binomial_heep\sd_tema2_binomial_heap\cmake-build-debug
   description = Re-running CMake...
   generator = 1
 

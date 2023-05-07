@@ -767,8 +767,8 @@
 	"kind" : "cmakeFiles",
 	"paths" : 
 	{
-		"build" : "C:/Users/andre/Documents/sd-lab/tema2-binomial_heep/cmake-build-debug",
-		"source" : "C:/Users/andre/Documents/sd-lab/tema2-binomial_heep"
+		"build" : "C:/Users/andre/Documents/sd-lab/tema2-binomial_heep/sd_tema2_binomial_heap/cmake-build-debug",
+		"source" : "C:/Users/andre/Documents/sd-lab/tema2-binomial_heep/sd_tema2_binomial_heap"
 	},
 	"version" : 
 	{
