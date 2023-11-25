@@ -6,8 +6,8 @@
 
 using namespace std;
 
-ifstream in("mergeheap.in");
-ofstream out("mergeheap.out");
+ifstream in("test.in");
+ofstream out("results.out");
 
 struct Node{
     int value, degree;
